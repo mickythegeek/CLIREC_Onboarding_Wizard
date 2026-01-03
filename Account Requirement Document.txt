@@ -1,0 +1,1193 @@
+ACCOUNT REQUIREMENT DOCUMENT FOR Settlement Unit
+
+1)	Account Name -			NIBSS RECEIVABLE
+    GL Number -				[REDACTED_GL]
+    No of Products - 			16
+    No of Settlement Files - 		16	
+         Settlement File Names:
+1.	EBILLSPAY_214_inwards successful.csv                                                                                                                                           
+2.	EBILLSPAY_214_outwards successful.csv                                                                                                                                         
+3.	CMMS_214_inwards successful.csv
+4.	CMMS_214_outwards successful.csv
+5.	NIBSS_EASY_PAY_214_inwards successful.csv
+6.	NIBSS_EASY_PAY_214_outwards successful.csv
+7.	NIP_214_inwards successful.csv
+8.	NIP_214_outwards successful.csv
+9.	NIBSS_NIP_GSI_214_inwards successful.csv
+10.	NIBSS_NIP_GSI_214_outwards successful.csv
+11.	MCASH_214_inwards successful.csv
+12.	NIP DISPUTE_214_outwards successful.csv
+13.	NIP DISPUTE_214_inwards successful.csv
+14.	NIPBULK_214_inwards successful.csv
+15.	CPAY_214_inwards successful.csv
+16.	NQR_MERCHANT_214_inwards successful.csv
+
+                                       
+Conditions to filter transactions per file
+     
+     The files listed from 1 to 16 are all in the same format:
+
+a.	For all the INWARD reports, sort according to column J (DESTINATION INSTITUTION) to copy out FIRST CITY MONUMENT BANK.
+b.	Move the TRANSACTION TIME on column G to column A.
+c.	Move the session ID on column C to column B.
+d.	Move NARRATION from column M to column C.
+e.	Move AMOUNT from column F to column E.
+f.	Create empty 3 columns on column F,G and H.
+g.	Extract from right 23 characters from session ID on column B and put on column G.
+
+
+     From Finacle report:
+a.	Sort according to column E (PART_TRAN_TYPE) and negate all the items on column I (TRAN_AMT) with D sign on column E.
+b.	Move TRAN_DATE from column G to column A.
+c.	Cut from column M (TRAN_PARTICULAR_2) to column B.
+d.	Cut from column J (TRAN_PARTICULAR) to column C.
+e.	Cut from column F (VALUE_DATE) to column D.
+f.	Cut from column I (TRAN_AMOUNT) to column E.
+g.	Extract from right 23 characters from column B (TRAN_PARTICULAR_2) and put on column G.
+h.	Run V.lookup on column G to identify match items.
+     
+The amount in both Ledger and NIBSS reports are always the same for NIP INWARD GL.
+For the OUTWARD files, look for the session IDs that have the first six characters as 9. These are the items in the OUTWARD files that impact the NIP INWARD GL and the mode of extracting the reconciliation parameters is the same with what has been explained for the INWARD files above.
+
+For NIP INWARD GL, there are 12 sessions as listed below.
+
+Session	Time
+A	055959
+B	085959
+C	095959
+D	105959
+E	115959
+F	125959
+G	135959
+H	145959
+I	165959
+J	185959
+K	205959
+L	235959
+
+
+                        *****************************************************
+
+     
+
+     
+
+
+
+2) Account Name -		NIBSS PAYABLE A/C Outward
+GL Number -			[REDACTED_GL]
+No of Products - 			4 	
+No of Settlement Files - 	12/13. These includes 12 NIP Outwards, 12 eBillsPay and 1 NIP Dispute equaling 13 files. When no Dispute file only 12 files
+Settlement File Names -	(i) NIP_214_outwards successful.csv 
+(ii) EBILLSPAY_214_outwards successful.csv
+(iii) NIP_Dispute_234_outward_successful.csv
+(iv) NIP REVERSAL_214_outwards successful.csv
+File conditions to filter transactions per file
+Note: (a) The files come in twelve sessions (A, B, C, D, E, F,G,H,I,J,K,L)
+	(b) Only NIP, EBILLSPAY and NIP Dispute files are required 
+	(c) Only outward_successful files are required 
+	
+A) Session A - Ebillspay - 
+i.	Filter condition: 
+-	Go to Session ID column and filter for those whose first 6 digits are [REDACTED_PREFIX]
+ii.	Column G is Post Date
+iii.	Column G is Value Date
+iv.	Reference Number - Column C. It is the following (24 digits after [REDACTED_PREFIX]), e.g., [REDACTED_REF]
+v.	Amount - Column - F – Amount
+vi.	Details - Column M/Session ID
+vii.	Account needs Partial Matching due to unequal amount in some cases
+
+B) Folder to target - NIP-outward successful file
+i.	Filter condition: 
+a.	Go to Session ID column and filter for those whose first 6 digits are [REDACTED_PREFIX]
+ii.	Column G is Post date
+iii.	Column G is Value Date
+iv.	Reference Number - Column C. It is the following (24 digits after [REDACTED_PREFIX]), e.g., [REDACTED_REF]
+v.	Amount - Column - F – Amount
+vi.	Details - Column M/Session ID
+vii.	Amount on Ledger is same on statement so no need for Partial Matching
+
+C) Folder to target - NIP-Dispute
+i.	Filter condition: 
+a.	Go to Session ID column and filter for those whose first 6 digits are [REDACTED_PREFIX]
+ii.	Column G is Post date
+iii.	Column G is Value Date
+iv.	Reference Number - Column C. It is the following (24 digits after [REDACTED_PREFIX]), e.g., [REDACTED_REF]
+v.	Amount - Column - F – Amount 
+vi.	Details - Column M/Session ID
+
+PFS RECOMMENDATION N/A
+AGREEMENTS	 Amount on Ledger is same on statement so no need for Partial Matching
+
+
+
+
+
+
+
+
+
+
+
+
+
+3)	Account Name -			ETZ TRANSFER PROOF
+    GL Number -				[REDACTED_GL]
+    No of Products - 			02
+    No of Settlement Files - 		02	
+         Settlement File Names:
+a.	214_SAMEBANK_TRANSFERS_DETAILS_DDMMYYYY_SESSION
+b.	214_INCOMING_TRANSFERS_DETAILS_DDMMYYYY_SESSION
+There are four session(7am, 11am, 2pm & 5pm)
+Conditions to filter transactions per file
+     
+     
+a.	The reference for matching is on column J for INCOMING TRANSFERS in the settlement reports while is on TRAN_REMARKS column in the Ledger.
+b.	The reference for matching is on column H for SAMEBANK TRANSFERS in the settlement reports while it is on TRAN_REMARKS column in the Ledger.
+     
+
+                  ********************************************************
+
+
+
+4)	Account Name -			Visa Mastercard Recharge Payable
+GL Number -				[REDACTED_GL]
+No of Products - 			1
+No of Settlement Files - 		1	
+Settlement File Names -		Recharge_transactions_by_settlement_fcmb
+Account Owner	- 		[REDACTED_NAME]
+
+File conditions to filter transactions per file
+
+a.	Go To PAN Column and filter by transactions whose first 6 digits includes ([REDACTED_BIN], [REDACTED_BIN]). This is the BIN
+b.	Column J is Value Date
+c.	Reference Number is - Column L i.e., Trans Ref 
+i.	However, where Trans Ref is truncated use STAN as Reference
+d.	Amount - Column - U - Amount
+e.	Narration – concatenation of Tran Ref /PAN/STAN
+
+PFS RECOMMENDATION 
+
+N/A
+
+AGREEMENT
+Amount on Ledger is same on statement so no need for Partial Matching
+
+********************************************************************
+
+5) Account Name -		INTERSWITCH POS-WEB PAYABLE	
+GL Number -			[REDACTED_GL]
+No of Products - 			2		
+No of Settlement Files - 	3
+Settlement File Names -	
+
+a.	FCMB_WEB_Report_DR_YYYY_MM_DD_HHMMSS
+b.	FCMB_WEB_Report_PR_YYYY_MM_DD_HHMMSS
+c.	FCMB-IPG_institution_detail_report_NEW_YYYY_MM_DD_HHMMSS
+
+
+File conditions to filter transactions per file
+
+On the settlement file for the first two WEB Reports, filter according to column H (PAN) and retain only PAN with [REDACTED_BIN].
+Filter by Settlement_Impact_Desc on column V and retain only Amount_Payable.
+Retrieval_Reference_Nr on column AA is the reconciliation parameter.
+
+For the IPG report, filter according to column H (PAN) and retain only PAN with [REDACTED_BIN]. The retrieval_reference_number column N is the matching parameter.
+
+On the Finacle download, extract the Retrieval Reference Number (12 digits from left) on the column named Tran_Remark.
+
+Run V-Look up to identify match items.
+
+
+*******************************************************************************
+
+
+
+6) Account Name -		INTERSWITCH TRANSFERS RECEIVABLE	
+GL Number -			[REDACTED_GL]
+No of Products - 			4		
+No of Settlement Files - 	7
+Settlement File Names -	
+
+
+a.	FCMB_Agency_Banking_Report_1_DR_YYYY_MM_DD_023656  
+b.	FCMB_Agency_Banking_Report_1_PR_YYYY_YY_DD_033110
+c.	FCMB_Agency_Banking_Report_2_PR_YYYY_MM_DD_033109
+d.	FCMB_ATM_Transfers_Report_DR_YYYY_MM_DD_033245
+e.	FCMB_ATM_Transfers_Report_PR_YYYY_MM_DD_033004
+f.	FCMB_Autopay_Report_DR_YYYY_MM_DD_032718
+g.	FCMB_Autopay_Report_PR_YYYY_MM_DD_032535
+h.	FCMB_Other_Transfers_Report_DR_YYYY_MM_DD_033958
+i.	FCMB_Other_Transfers_Report_PR_YYYY_MM_DD_035003
+j.	FCMB_QT_Transfers_Report_DR_YYYY_MM_DD_034106
+k.	FCMB_QT_Transfers_Report_PR_YYYY_MM_DD_040609
+l.	FCMB_Transfer_Service_Core_institution_detail_report_NEW_YYYY_MM_DD_085114
+
+
+File conditions to filter transactions per file
+
+On the settlement files, filter according to column X (Settlement_Impact_Desc) and leave only Amount_receivable.
+Manually, we concatenate PAN on column I with Retrieval_Reference_Nr on column AA with the Amount_Impact on column V as a reconciliation parameters.
+
+On the Finacle download, extract the Retrieval Reference Number (12 digits from left) on the column named Tran_Remark. Then concatenate the Masked PAN on the column named REF_NUM with the extracted Retrieval Reference Number with the Amount on the column named TRAN_AMT
+
+Run V-Look up to identify match items.
+
+
+
+
+********************************************************************************
+
+7) Account Name -		INTERSWITCH TRANSFERS PAYABLE
+GL Number -			[REDACTED_GL]
+No of Products - 			4		
+No of Settlement Files - 	7
+Settlement File Names -	
+
+
+a.	FCMB_Agency_Banking_Report_1_DR_YYYY_MM_DD_023656  
+b.	FCMB_Agency_Banking_Report_1_PR_YYYY_YY_DD_033110
+c.	FCMB_Agency_Banking_Report_2_PR_YYYY_MM_DD_033109
+d.	FCMB_ATM_Transfers_Report_DR_YYYY_MM_DD_033245
+e.	FCMB_ATM_Transfers_Report_PR_YYYY_MM_DD_033004
+f.	FCMB_Autopay_Report_DR_YYYY_MM_DD_032718
+g.	FCMB_Autopay_Report_PR_YYYY_MM_DD_032535
+h.	FCMB_Other_Transfers_Report_DR_YYYY_MM_DD_033958
+i.	FCMB_Other_Transfers_Report_PR_YYYY_MM_DD_035003
+j.	FCMB_QT_Transfers_Report_DR_YYYY_MM_DD_034106
+k.	FCMB_QT_Transfers_Report_PR_YYYY_MM_DD_040609
+l.	FCMB_Transfer_Service_Core_institution_detail_report_NEW_YYYY_MM_DD_085114
+m.	FCMB_Prepaid_Card_Load_Report_PR_YYYY_MM_DD_053356
+n.	FCMB_Prepaid_Card_Load_Report_DR_YYYY_MM_DD_053356
+
+
+File conditions to filter transactions per file
+
+On all the settlement files, filter according to column X (Settlement_Impact_Desc) and leave only Amount_payable.
+Manually, we concatenate PAN on column I with Retrieval_Reference_Nr on column AA with the Amount_Impact on column V as a reconciliation parameters.
+
+On the Finacle download, extract the Retrieval Reference Number (12 digits from left) on the column named Tran_Remark. Then concatenate the Masked PAN on the column named REF_NUM with the extracted Retrieval Reference Number with the Amount on the column named TRAN_AMT
+
+Run V-Look up to identify match items.
+
+
+
+**********************************************************************************
+
+
+
+
+8) Account Name -		MASTERCARD WEB PAYABLE
+GL Number -			[REDACTED_GL]
+No of Products - 			2		
+No of Settlement Files - 	7
+Settlement File Names -	
+
+
+a.	FCMB PLC_ISSUER_dd-mm-yyyy
+b.	FCMB PLC_ISSUER_VAS_dd-mm-yyyy
+c.	RAPOS DDMMYYYY PR & DR
+d.	DOM POS DD MM YYYYY
+e.	FCMB_WEB_Report_DR_YYYY_MM_DD_TTTTTT
+f.	FCMB_WEB_Report_PR_YYYY_MM_DD_TTTTTT
+g.	FCMB-IPG_institution_detail_report_NEW_YYYY_MM_DD_TTTTTT
+
+
+
+File conditions to filter transactions per file
+
+FCMB PLC_ISSUER_dd-mm-yyyy – On the worksheet named MASTER CARD DR, TRANAMOUNT is on column AF, ACQSTAN is on column W. MASKEDPAN is on column AB. Concatenate MASKEDPAN with the ACQSTAN as the matching parameter. Make all the line items on column AF debits and the summed up amount credit.
+On the worksheet named MASTER CARD CR, TRANAMOUNT is on column AF, ACQSTAN is on column W. MASKEDPAN is on column AB. Concatenate MASKEDPAN with the ACQSTAN as the matching parameter. Make all the line items on column AF credits and the summed up amount debit.
+
+
+FCMB PLC_ISSUER_VAS dd-mm-yyyy – On the worksheet named MASTER CARD DR, TRANAMOUNT is on column AF, ACQSTAN is on column W. MASKEDPAN is on column AB. Concatenate MASKEDPAN with the ACQSTAN as the matching parameter. Make all the line items on column AF debits and the summed up amount credit.
+On the worksheet named MASTER CARD CR, TRANAMOUNT is on column AF, ACQSTAN is on column W. MASKEDPAN is on column AB. Concatenate MASKEDPAN with the ACQSTAN as the matching parameter. Make all the line items on column AF credits and the summed up amount debit.
+
+
+
+RAPOS DDMMYYYY PR & DR – On column F, filter by ‘[REDACTED_BIN]’, ‘[REDACTED_BIN]’ and [REDACTED_BIN]. PAN is on column F, STAN is on column E and Tran_Amount_Req is on column M. Concatenate PAN and STAN as the matching parameter.
+
+DOM POS DD MM YYYY– PAN is on column H, AmtTxnLocal is on column V, AuthorizationID is on column T. Mask the PAN by picking the first 6 digit and last 4. The six numbers in-between should be represented by ******. Concatenate the Masked PAN and the STAN as the matching parameter. On column I named ProcessorCode, remove all the numbers that start with 2.
+
+
+FCMB_WEB_Report_DR_YYYY_MM_DD_TTTTTT
+FCMB_WEB_Report_PR_YYYY_MM_DD_TTTTTT
+For the two reports above, filter by Settlement_Impact_Desc on column V to pick Amount_Payable. Then filter by column H (PAN) to pick only Card BINS-[REDACTED_BIN],[REDACTED_BIN] & [REDACTED_BIN]. PAN is on column H while STAN is on column G. Concatenate the PAN and STAN as the matching parameter.
+
+
+     FCMB-IPG_institution_detail_report_NEW_YYYY_MM_DD_TTTTTT– On column I named ‘role’, filter and retain only ISSUER. On column H named PAN, filter by ‘[REDACTED_BIN]’, ‘[REDACTED_BIN]’ and [REDACTED_BIN]. Concatenate PAN and STAN on column G to form matching parameter.
+
+On Finacle, On the column named TRAN_RMKS, pick the 6 digit STAN on the far right before /MSA. Concatenate this with the column named REF_NUM to set up the matching parameter. The column for amount is named  TRAN_AMT.
+
+
+
+
+*********************************************************************************
+
+9) Account Name -		VISA CORRESPONDENCE
+GL Number -			[REDACTED_GL]
+No of Products - 			2		
+No of Settlement Files - 	1
+Settlement File Names -
+
+
+a.	MCI.AR.T464.M.[REDACTED_ID].D230314.T012312.A022
+
+File conditions to filter transactions per file
+The raw T464 file needs conversion before usage and the main reconciliation parameter here is auth ID and Masked PAN. The Masked PAN is concatenated with the auth ID while the last 6 digits data on Tran_Remarks column on Finacle report is also concatenated with the Masked PAN and V-Look up is ran.
+
+
+
+**********************************************************************************
+
+
+10) Account Name -		MASTERCARD USD PAYABLE ACCOUNT
+GL Number -			[REDACTED_GL]
+No of Products - 			2		
+No of Settlement Files - 	1
+Settlement File Names -
+
+
+a.	MCI.AR.T464.M.[REDACTED_ID].D230314.T012312.A022
+
+File conditions to filter transactions per file
+The raw T464 file needs conversion before usage and the main reconciliation parameter here is auth ID and Masked PAN. The Masked PAN is concatenated with the auth ID while the last 6 digits data on Tran_Remarks column on Finacle report is also concatenated with the Masked PAN and V-Look up is ran.
+
+
+**********************************************************************************
+
+
+11) Account Name -		PRIME AIRTIME SUSPENSE ACCT(CIMG)
+GL Number -			[REDACTED_GL]
+No of Products - 			1		
+No of Settlement Files - 	1
+Settlement File Names -
+
+a.	FCMB Daily Usage 
+
+File conditions to filter transactions per file
+The settlement report has the reconciliation parameter of 25-digit number on column L and it is named Customer Reference. The same number is on column K (TRAN_RMKS) in the Finacle download.
+
+
+
+
+
+**********************************************************************************
+
+
+
+
+
+12) Account Name -		PAYATTITUDE FLOAT ACCOUNT	
+GL Number -			[REDACTED_GL]
+No of Products - 			1		
+No of Settlement Files - 	1
+Settlement File Names -	
+	
+a.	FCMB PLC_ISSUER_VAS_DD-MM-YYYY
+
+Filtering conditions
+
+In the worksheet named ‘PAYATITUDE DR’  concatenate masked PAN on column AB with ACQSTAN on column W to create a unique reference for matching.
+
+Also on Finacle download, extract the last 6 digit on the right from the column named TRAN_REMARKS. Concatenate the Masked PAN on the Ref_Num column with the extracted 6 digit from the TRAN_REMARKS column to create a unique reference for matching.
+
+
+
+
+********************************************************************************
+
+
+
+13) Account Name -		ZONE SWITCH ROU CHRGS PYBLE ACCT (Mastercard)
+GL Number -			[REDACTED_GL]
+No of Products - 			2		
+No of Settlement Files - 	1 
+Settlement File Name -		SettlementTransactionsfor1100_01_01_2023-
+
+Note: - a. This settlement file has 1 transaction type, which is:
+(i) Cash Withdrawal on column Q  
+	
+File conditions to filter transactions per Transaction Type
+I)	For Cash Withdrawal
+a.	Step 1
+b.	Filter condition:
+i.	Go Column G (Sender Card Number), Pick only those with BIN [REDACTED_BIN].
+c.	Then Go to Column Q, pick Cash Withdrawal Transaction, 
+d.	On Column R, pick IsReversal = True
+e.	On To get Amount 
+i.	Add Column B (Amount) and Column C (Fee) to get the true amount which would be on Ledger.
+ii.	The resulting amount after adding both Column B and C together must be positive
+f.	Step 2
+g.	Then Go to Column Q, pick Cash Withdrawal Transaction, 
+h.	On Column R, pick IsReversal = False
+i.	On To get Amount 
+i.	Add Column B (Amount) and Column C (Fee) to get the true amount which would be on Ledger.
+ii.	The resulting amount after adding both Column B and C together must be negative. (i.e. you have to change the polarity of the amount to negative -)
+
+
+Additional Processes/Info Adopted by the User
+a.	Column L is Post date
+b.	Column L is Value Date
+c.	Reference Number - Column N - RRN
+d.	Amount - Column - B. Add Column C (Fee) to get the true amount which is on Ledger. 
+e.	Details - Column concatenate N, Q, O (Sender Bank), Terminal ID (E), and Column F (Sender Account). 
+i.	Details on Ledger must also be adjusted to capture Sending Account for easier investigation.
+
+ISSUE:
+a. For Cash Withdrawal Step 2, the Amount column is not Negative on the Settlement file as user narrated, please liaise with the Bank to confirm if this is an error or there is a need for PFS to ensure the Amount have that polarity.
+
+PFS RECOMMENDATION 
+N/A
+
+AGREEMENTS
+Amount on Ledger is same on statement so no need for Partial Matching
+
+
+
+*******************************************************************
+14) Account Name -		FUND TRANSFER TSS A/C
+GL Number -			[REDACTED_GL]
+No of Products - 			1		
+No of Settlement Files - 	4
+Settlement File Names -
+
+a.	214_OUTGOING_PAYMENTS_DETAIL_DDMMYYYY
+The report comes in four separate sessions and the folders are named as follows: 
+dd_mm_yyyy am
+dd_mm_yyyy 11am
+dd_mm_yyyy pm 
+dd_mm_yyyy 5pm
+
+File conditions to filter transactions per file
+Filter by column L to throw away anything that is not showing NGNLI99924430033
+The settlement files come not with header. The reference number for reconciliation is on column H and the character length is not usually the same. This same reference is on Tran_Remarks column on the Finacle report. This reference number is the reconciliation parameter.
+
+********************************************************************************
+
+
+
+15) Account Name -		MASTERCARD RECHARGE PYBLE
+GL Number -			[REDACTED_GL]
+No of Products - 			1		
+No of Settlement Files - 	1
+Settlement File Names -
+
+a.	recharge_transactions_by_settlement_DDMMYYYY
+
+File conditions to filter transactions per file
+Transaction reference is on column L and it is named Trxn Ref while the amount is on column U.
+On Finacle download, the reference is extracted on the TRAN_REMARKS column from the first 12 digits from left.
+Run V-Look up to identify the matched items.
+
+
+**********************************************************************************
+16) Account Name -		INTSWITCH RECBL
+GL Number -			[REDACTED_GL]
+No of Products - 			1		
+No of Settlement Files - 	2
+Settlement File Names –
+
+a.	FCMB_ATM_Withdrawal_Report_PR_YYYY_MM_DD_HHMMSS
+b.	FCMB_ATM_Withdrawal_Report_DR_YYYY_MM_DD_HHMMSS
+
+These are cash withdrawal transactions carried out on FCMB ATMs by other Banks’ cardholders.
+
+File conditions to filter transactions per file
+Filter according to column S (Settlement_Impact_Desc) and pick only Amount_receivable. Being a receivable account, the line by line amounts on column R (Settlement_Impact) are left as credit. Should there be debit amounts, run V-Look up of these against the credit amounts to match out auto reversed transactions using Retrieval_Reference_Nr. Add N25 to each of the amounts on column R (Settlement_Impact). The amounts on this column R (Settlement_Impact) are summed up and the bulk summed figure is negated to make everything on column R to be zero. 
+On Finacle download, the column named PART_TRAN_TYPE is contained D & C. All the items with ‘D’ are negated. Extract from column named TRAN_REMARKS the first 12 digits from left. Run V Look-up of the TRAN_AMOUNT with ‘D’ against the TRAN_AMOUNT with ‘C’ using the 12 digits extracted from the TRAN_REMARKS columns to match out auto reversed transactions.
+Compare the amounts on the settlement side with what is on the Finacle side using Retrieval_Reference_Nr to identify match items.
+
+
+
+***************************************************************************
+
+17) Account Name -		ZONESWITCH VERVE PAYABLE
+GL Number -			[REDACTED_GL]
+No of Products - 			1		
+No of Settlement Files - 	1
+Settlement File Names –
+
+214TransactionsforSettlementBatchXX_XX_MM_DD_YYYY
+
+File conditions to filter transactions per file
+Filter by column G (Sender Card Number) and pick only card PAN with card BIN-[REDACTED_BIN]. Add column B (Amount) and C (Acquirer's Fee). The summation of these two amounts is what is on Finacle. The parameter for reconciliation is on column N (RRN).
+
+On Finacle report, the RRN is extracted from TRAN_REMARKS column and it is usually the first 12 digits from left.
+
+Run V-Look up of the two reports using the RRN to identify match items. 
+
+
+*******************************************************************************
+
+18) Account Name -		3 LINE FLOAT ACCOUNT 31 01 2023
+GL Number -			[REDACTED_GL]
+No of Products - 			0		
+No of Settlement Files - 	0
+Settlement File Names –
+
+This is an InterSwitch income account for 3line. What goes to this account is fees.
+
+
+*********************************************************************************
+
+
+
+19) Account Name -		CARDLOAD PAYABLE
+GL Number -			[REDACTED_GL]
+No of Products - 			0		
+No of Settlement Files - 	0
+Settlement File Names –
+
+There is no settlement report used for this account. Automation will be EXTREMELY difficult as there is no reconciliation parameter. We use our judgement today to reconcile this account manually using amounts and dates to connect some of the amount which is usually one credits against several debits without anything that connects them.
+
+*********************************************************************************
+20) Account Name -		CREDIT CARD ATM ON- US SUSPENSE ACCOUNT
+GL Number -			[REDACTED_GL]
+No of Products - 			1		
+No of Settlement Files - 	1
+Settlement File Names –
+
+a.	FCMB-TRXN-733.243
+
+This is cash withdrawal transactions carried out on FCMB ATM using FCMB credit card.
+At the point of transaction, this account is debited to credit the Bank’s ATM till on-line-real-time.
+The settlement file does not contain Retrieval Reference Number and to get this, Procash report is required from Data Science team.
+Retrieval Reference Number is populated from Procash into the settlement report using Auth ID for reconciliation to happen.
+Any transaction that is in the settlement report not in the Finacle report is an unimpacted transaction which will be a shortage in the ATM till.
+Any transaction that is in Finacle report not in the settlement file is, all thing being equal, a failed transaction which will be an overage in the ATM till.
+Entries to debit the credit cardholders for the settled transactions are done manually using the cardholders’ account number, Auth ID and the transaction date as narration.
+Extract the cardholders’ account number and auth ID and concatenate the two to run v-look up to identify match items.
+The worksheet to reference is named ON US ATM
+
+**********************************************************************************
+
+21) Account Name -		MTN RECHARGE SUSP AC
+GL Number -			[REDACTED_GL]
+No of Products - 			1		
+No of Settlement Files - 	1
+Settlement File Names –
+ 
+YYYYMMDDHHMMSS
+The report is named using date and time as displayed above.
+File conditions to filter transactions per file
+The reconciliation reference is on column I named PROCESSORREFERENCE. This same reference is also in the Finacle report on Remarks column.
+Run V-Look up of the two reports using the reference to identify match items.
+*****************************************************************************
+
+22) Account Name -		POS On US Chargeback Suspense account
+GL Number -			[REDACTED_GL]
+No of Products - 			0		
+No of Settlement Files - 	0
+Settlement File Names –
+
+Posting into this account has been suspended. The account does not use settlement report as it is self reconciling as what comes in goes out. Narration and amount were the reconciliation parameters when the account was in use.	
+
+
+******************************************************************************
+
+23) Account Name -		POS PAYABLE - VISA
+GL Number -			[REDACTED_GL]
+No of Products - 			1		
+No of Settlement Files - 	1
+Settlement File Names –
+
+a.	ORIGINAL TRANSACTIONS
+
+This is a POS transaction carried out using FCMB credit cards on other Banks’ POS terminals.
+There is no on-line-real-time entries for this category of transactions.
+Network International (NI) will provide a posting file for manual upload which will be used to debit customer and credit this account.
+The same NI will provide settlement file bulk debit of which will be positioned in this GL and the line by line items will used to match the credit already posted into the GL using Auth IDs.
+The reconciliation parameter are Auth ID in column Y, Amount in column L and account number in column E which is in the settlement report.
+PLEASE NOTE: MAKE USE OF ROU POS 
+
+
+**********************************************************************************
+
+
+
+
+
+24) Account Name -		VISACARD RECEIVABLE
+GL Number -			[REDACTED_GL]
+No of Products - 			3		
+No of Settlement Files - 	1
+Settlement File Names
+
+a.	FCMB_ATM_CPD_XX-XXX-XXXX_SETT_XX-XXX-XXXX chk
+Inside the workbook above, look for worksheets with the names below:
+1.	Trans Not On Us (Int)
+2.	Trans Not On Us (Domestic)
+3.	Trans Not On Us (Domestic VISA)	
+
+
+This is when other Banks’ Visa cards are used on FCMB ATM terminals. At the point of transaction, this account is debited to credit the Bank’s ATM tills.
+What comes in settlement should be credits. 
+
+File conditions to filter transactions per file
+
+In the worksheet ‘Trans Not On Us (Int), filter according to column U (TRANSACTIONTYPE) and pick only Cash Disbursement and Cash Disbursement Reversal. Cash Disbursement should be in credit while Cash Disbursement Reversal will be in debit. Run V-Look up of Cash Disbursement against Cash Disbursement Reversal using ACQRRN on column V to filter out auto reversed transactions. This ACQRRN is on column V for international only.
+
+
+In the worksheets ‘Trans Not On Us (Domestic), filter according to column Q (TRANSACTIONTYPE) and pick only Cash Disbursement and Cash Disbursement Reversal. Cash Disbursement should be in credit while Cash Disbursement Reversal will be in debit. Run V-Look up of Cash Disbursement against Cash Disbursement Reversal using ACQRRN on column R to filter out auto reversed transactions.
+
+In the worksheets ‘Trans Not On Us (Domestic VISA), filter according to column Q (TRANSACTIONTYPE) and pick only Cash Disbursement and Cash Disbursement Reversal. Cash Disbursement should be in credit while Cash Disbursement Reversal will be in debit. Run V-Look up of Cash Disbursement against Cash Disbursement Reversal using ACQRRN on column R to filter out auto reversed transactions.
+
+For all the three reports, add N25 to all the amounts on column I (TRANSACTION_AMOUNT) as this is what that also impact the Ledger.
+
+The reference for reconciliation is usually ACQRRN and on Finacle, this is extracted from TRAN_REMARKS column using the first 12 digits from left.
+
+Run V-Look up using the ACQRRN from settlement side against the extracted 12 digits from TRAN_REMARKS from Finacle report to identify match items.
+
+
+***************************************************************************
+
+25) Account Name -		INTERSWITCH RECHARGE PAYABLE
+GL Number -			[REDACTED_GL]
+No of Products - 			1		
+No of Settlement Files - 	1
+Settlement File Names
+
+a.	bank_settlement_report_ FCMB_DDMMYYYY
+This is a Payable account accommodating airtime top up transactions. At the point of transaction, customer is debited to credit this account.
+
+File conditions to filter transactions per file
+Filter by column K (Terminal Id) and pick only the terminal IDs as displayed below:
+[REDACTED_TID]
+[REDACTED_TID]
+[REDACTED_TID]
+
+The reference for reconciliation is on column L named ‘Trxn Ref’ and this is also can be extracted on Finacle report on TRAN_REMARKS column.
+	*************************************************************************
+
+26) Account Name -		MASTERCARD RECEIVABLE AC
+GL Number -			[REDACTED_GL]
+No of Products - 			1		
+No of Settlement Files - 	1
+Settlement File Names
+
+a.	MCI.AR.T464.M.[REDACTED_ID].DYYMMDD.T012312.A022
+
+This report needs conversion before usage and the main reconciliation parameter here is auth ID and RefNo. From Finacle report, extract from right the last 6 digits and the first 12 digits from left on the TRAN_REMARKS column and run V-look-up using the concatenated auth ID and RefNo in the settlement report against the last six digits from right concatenated with the first twelve digits from left on the Tran_Remarks column on Finacle.
+
+File conditions to filter transactions per file
+
+Filter by TerminalID and pick only terminal ID that starts with [REDACTED_TID_PREFIX] only.
+Add together the transaction amount on the column named AmtSttlmnt with the fee amount on the column named InterChgFee.
+	
+
+
+**************************************************************************
+
+27) Account Name -		PAYOUTLET AND CARDLOAD
+GL Number -			[REDACTED_GL]
+No of Products - 			1		
+No of Settlement Files - 	1
+Settlement File Names
+
+a.	214_OUTGOING_PAYMENTS_DETAIL_DDMMYYYY_XX
+
+The report comes in four separate sessions and the folders are named as follows: 
+dd_mm_yyyy am
+dd_mm_yyyy 11am
+dd_mm_yyyy pm 
+dd_mm_yyyy 5pm
+
+File conditions to filter transactions per file
+Filter by column L and throw away anything that is not NGNLI99924430205. Amount is on column F while the reference number for reconciliation is on column F. This same reference number is with the narration on the Finacle(Ledger) side and it is on column named TRAN_PARTICULAR. It can also be extracted on the TRAN_REMARKS column. The character length of the reference is not consistent, but it is not more than 12 characters.
+Run V-Look up using the reference to identify the match items.
+********************************************************************************
+
+
+28) Account Name -		CORPORATE PAY
+GL Number -			[REDACTED_GL]
+No of Products - 			1		
+No of Settlement Files - 	1
+Settlement File Names
+
+a.	214_INCOMING_CPAY_DETAILS_DDMMYYYY
+The report comes in four separate sessions and the folders are named as follows: 
+dd_mm_yyyy am
+dd_mm_yyyy 11am
+dd_mm_yyyy pm 
+dd_mm_yyyy 5pm
+
+File conditions to filter transactions per file
+This is a Corporate Pay Inward transaction through Etranzact platform. Everything in the file is used to reconcile the GL. The REFERENCE for reconciliation is on column F and they are 12 and 15 characters in length. If it is 12 in the settlement file, it will be 12 in the Finacle record. If it is 15 in the settlement file, it will be 15 in the Finacle record.
+The REFERENCE can be extracted from either TRAN_REMARKS column or TRAN_PARTICULAR column irrespective of the length of the characters.
+Run V-Look using the REFERENCE to identify match items.
+
+*********************************************************************************
+
+
+29) Account Name -		ATM ROU 
+GL Number -			[REDACTED_GL]
+No of Products - 			1		
+No of Settlement Files - 	2
+Settlement File Names
+
+
+FCMB_ATM_Withdrawal_Report_DR_YYYY_MM_DD_HHMMSS
+FCMB_ATM_Withdrawal_Report_PR_YYYY_MM_DD_HHMMSS
+FCMB_ATM_Withdrawal_Report_Unsettled_YYYYMMDD_YYYYMMDD_Report_Uploaded_YYYY_MM_DD_TTTTTT
+
+This is when FCMB verve card with BIN [REDACTED_BIN] is used to carry out cash withdrawal on another Banks’ ATMs. Customer is debited and this account is credited.
+
+File conditions to filter transactions per file
+On column I (PAN), filter and retain only card BIN- [REDACTED_BIN]. 
+Then, filter by column S (Settlement_Impact_Desc) and retain only Amount_Payable.
+Then, filter by column S (Settlement_Impact_Desc) and retain only Issuer_fee_payable of N35 leaving out the N5.
+The summation of the Amount_Payable and Issuer_fee_payable is what that go to the Payable as settlement bulk.
+The column to reference for AMOUNT is column R (Settlement_Impact).
+The reference for reconciliation is on column V (Retrieval_Reference_Nr)
+
+On Finacle, extract on the TRAN_REMARKS column the first 12 digits from left and run V Look up using this against the Retrieval_Reference_Nr on the settlement file to identify match items.
+
+******************************************************************************
+
+
+30) Account Name -		PAY ATTITUDE PAYABLE ACCOUNT
+GL Number -			[REDACTED_GL]
+No of Products - 			1		
+No of Settlement Files - 	1
+Settlement File Names
+
+a.	FCMB_ATM_CPD_XX-XXX-XXXX_SETT_XX-XXX-XXXX chk
+
+File conditions to filter transactions per file
+In the report ‘FCMB_ATM_CPD_XX-XXX-XXXX_SETT_XX-XXX-XXXX chk’, go to the worksheet named PayAttitude Not On Us. Settlement amount is on column K while the reference for reconciliation is on column AC (ISSUERRRN). This same RRN in found on TRAN_REMARKS column on the Finacle report.
+
+******************************************************************************
+31) Account Name -		PAYATTITUDE PAYABLE ACCOUNT
+GL Number -			[REDACTED_GL]
+No of Products - 			1		
+No of Settlement Files - 	1
+Settlement File Names
+
+a.	FCMB PLC_ISSUER_XX-XX-XXXX
+
+File conditions to filter transactions per file
+
+In the report ‘FCMB PLC_ISSUER_XX-XX-XXXX’, look for the worksheet named PAYATITUDE DR. Inside this report, on column AF is TRANAMOUNT while the RRN for matching is on column AW.
+
+On Finacle, extract from the TRAN_REMARKS column the RRN and run V-Look up to identify match items.
+
+
+
+
+****************************************************************************
+
+
+32) Account Name -		PAY ATTITUDE RECEIVABLE ACCOUNT
+GL Number -			[REDACTED_GL]
+No of Products - 			1		
+No of Settlement Files - 	2
+Settlement File Names
+
+a.	FCMB_ATM_Withdrawal_Report_DR_YYYY_MM_DD_HHMMSS
+b.	FCMB_ATM_Withdrawal_Report_PR_YYYY_MM_DD_HHMMSS
+c.	FCMB_ATM_CPD_DD-MMM-YYYY_SETT_DD-MMM-YYYY
+
+
+File conditions to filter transactions for a & b
+On column AB, filter by trxn_category and pick only ATM WITHDRAWAL (Cardless:Non-Card Generated). The reference on column V named Retrieval_Reference_Nr and this is used for reconciliation.
+On Finacle, the reference is extracted from TRAN_REMARKS column and this is the first 12 digits from left.
+
+File conditions to filter transactions for c
+The report contains several other reports but the one to reference is the worksheet named ‘Payattitude not On Us’.
+Concatenate CARD_NUMBER on column G with APPROVAL CODE on column O as a reference for reconciliation.
+On Finacle, extract from TRAN_REMARKS column the last six digit and concatenate with the REF_NUM column that contains the masked PAN.
+*********************************************************************************
+
+
+33) Account Name -		MASTERCARD PAYABLE AC
+GL Number -			[REDACTED_GL]
+No of Products - 			1		
+No of Settlement Files - 	3
+Settlement File Names
+
+
+a.	MCI.AR.T464.M.[REDACTED_ID].DYYMMDD.T012312.A022
+b.	FCMB_ATM_Withdrawal_Report_DR_YYYY_MM_DD_HHMMSS
+c.	FCMB_ATM_Withdrawal_Report_PR_YYYY_MM_DD_HHMMSS
+
+
+File conditions to filter transactions per file
+For the first report, this is a T464 file which contains a lot of products and there is a special way of breaking this text file. After conversion and export into excel, look for card BIN that starts with [REDACTED_BIN] on the column named PAN_Mask. Filter by TerminalID and pick only the terminal that starts with 1 which represent ATM except [REDACTED_TID_PREFIX] which is for FCMB.
+The reference for reconciliation is on column named RefNo. Add together AmtSttlmnt and InterChgFee. The addition of AmtSttlmnt and InterChgFee is what that will posted as settlement into the GL.
+On the settlement report, it is the AmtSttlmnt and the InterChgFee is N25. But on Finacle, the amount is either with 25 or 26.86. What this means, in matching, as many of the items in the settlement report that has 26.86 will leave out excess N1.86.
+
+For the other two reports in b and c, filter by Bank_Card_Brand and select on MasterCard. Then filter by Settlement_Impact_Desc on column S and select only Amount_Payable. The reference for reconciliation is Retrieval_Reference_Nr on column V
+
+The reconciliation parameter from Finacle side is extracted on the TRAN_REMARKS column which is usually 12 digits from left.
+
+*******************************************************************************
+34) Account Name -		BBG BULK PYT SUSPENSE ACCOUNT
+GL Number -			[REDACTED_GL]
+No of Products - 			1		
+No of Settlement Files - 	0
+Settlement File Names
+
+This is a self-reconciling account. On the narration column, there is a 6 digit number that comes immediately after web:. This number is the reconciliation parameter.
+
+********************************************************************************
+
+35) Account Name -		CORAL PAY-USSD DOMESTIC/POS PURCHASE ACCOUNTS
+GL Number -			[REDACTED_GL]
+No of Products - 			1		
+No of Settlement Files - 	1
+Settlement File Names
+
+
+a.	FCMB SETT DDMMYYYY
+b.	FIRST CITY MONUMENT BANK LTD DDMMYYYY
+
+
+
+File conditions to filter transactions per file for a.
+In the settlement file, two worksheets are going to be referenced.
+1.	On us: The reference for reconciliation is on the column named Approval code. This is not present in the Finacle download but IT helps to generate this and share.
+2.	Remote On Us: The reference for reconciliation is on the column named Approval code. This is not present in the Finacle download but IT helps to generate this and share.
+
+
+File conditions to filter transactions per file for b
+The worksheet to reference is named ‘Confirmed. The reference for reconciliation is on a column named ‘paymentReference’ and this is the unique number also on Finacle. This number is on TRAN_REMARKS column on Finacle.
+
+
+******************************************************************************
+
+
+36) Account Name -		ATM Not On Us Chargeback Suspense account
+GL Number -			[REDACTED_GL]
+No of Products - 			1		
+No of Settlement Files - 	0
+Settlement File Names
+
+This is a self-reconciling account and the reconciliation parameter is the transaction amounts. What is posted as Debit is what that is posted as Credit and they match each other.
+
+
+*******************************************************************************
+
+
+37) Account Name -		BETTING BILLERS SUSPENSE ACCOUNT
+GL Number -			[REDACTED_GL]
+No of Products - 			1		
+No of Settlement Files - 	0
+Settlement File Names
+
+This is a self-reconciling account. At the point of transaction, customer is debited the principal amount plus the fee of N100 and the total of the principal with the fee come to this account as credit.
+When system is moving the fund, it debit this account the principal amount and split the fee of N100 into two (N7.50 and N92.50).
+The reference for reconciliation is embedded in the narration and this must be carefully extracted as it does not follow a defined pattern.
+
+
+**********************************************************************************
+
+38) Account Name -		CASHCARD PAYABLES
+GL Number -			[REDACTED_GL]
+No of Products - 			1		
+No of Settlement Files - 	2
+Settlement File Names
+FCMB_NIBSS_POS_Remote_Report_DR_YYYY_MM_DD_HHMMSS
+FCMB_NIBSS_POS_Remote_Report_PR_YYYY_MM_DD_HHMMSS
+File conditions to filter transactions per file
+On the reports, filter on the column named PAN and pick only card BIN-[REDACTED_BIN]. These are the transactions that will be debited line by line to the account. There is nothing that connect the credits in this account with the line by line debits that are passed there. 
+
+*********************************************************************************
+
+39) Account Name -		CORPORATE PAY HOLDING
+GL Number -			[REDACTED_GL]
+No of Products - 			1		
+No of Settlement Files - 	2
+Settlement File Names
+
+a.	214_OUTGOING_CPAY_DETAILS_DDMMYYYY.xlsx
+b.	214_SAMEBANK_CPAY_DETAILS_DDMMYYYY
+Filtering conditions
+
+For both reports the reference for reconciliation is on column F named REFERENCE. This same reference can be extracted from the narration on the Finacle download.
+
+*******************************************************************************
+
+40) Account Name -		E BILLS PAYABLE NIBBS
+GL Number -			[REDACTED_GL]
+No of Products - 			1		
+No of Settlement Files - 	0
+Settlement File Names
+
+This is a self-reconciling account as the debit and the credit in the account match themselves. Amount is used in the matching as the narration used most times are not consistent.
+
+********************************************************************************
+
+41) Account Name -		MASTERCARD NOU CHARGEBACK ACC
+GL Number -			[REDACTED_GL]
+No of Products - 			1		
+No of Settlement Files - 	0
+Use amount for reconciliation as what comes in is what that goes out.
+
+**************************************************************************
+42) Account Name -		MASTERCARD SETTLEMEMT(NIBSS)
+GL Number -			[REDACTED_GL]
+No of Products - 			1		
+No of Settlement Files - 	0
+
+
+This is nothing to connect the line by line credit that comes to this account with the bulk debit there.
+
+
+**************************************************************************
+43) Account Name -		MASTERCARD SETTLEMENT A/C
+GL Number -			[REDACTED_GL]
+No of Products - 			1		
+No of Settlement Files - 	0
+
+This is nothing to connect the line by line credit that comes to this account with the bulk debit there.
+****************************************************************************
+
+
+44) Account Name -		MERCHANT CHARGEBACK ACCOUNT
+GL Number -			[REDACTED_GL]
+No of Products - 			1		
+No of Settlement Files - 	0
+
+
+Posting into this account has been suspended. The account does not use settlement report as it is self reconciling as what comes in goes out. Narration and amount were the reconciliation parameters when the account was in use.
+
+*******************************************************************************
+
+
+45) Account Name -		MOBILE MONEY NIBSS RECEIVABLE ACCOUNT
+GL Number -			[REDACTED_GL]
+No of Products - 			1		
+No of Settlement Files - 	0
+
+
+This is a self-reconciling account as it does not use settlement reports. The reference for the debit leg can be found under the column named ‘Reference’ while the corresponding credit legs are on the column named Description.
+
+**********************************************************************************
+
+46) Account Name -		UPSL INSTANT SUSPENSE ACCOUNT
+GL Number -			[REDACTED_GL]
+No of Products - 			1		
+No of Settlement Files - 	1
+
+FCMB PLC_Inbound Transfer_VAS_DD-MM-YYYY
+
+File conditions to filter transactions per file
+This is PAYARENA Oubound transfer. At the point of transaction, customer is debited to credit this account.
+On the settlement file, the file in use is on the first worksheet and it is named ‘Inbound Transfer Credit’.
+Reference for reconciliation is on column Y named ‘ISSUER RRN’
+
+******************************************************************************
+
+47) Account Name -		MASTERCARD MECHANT A/C
+GL Number -			[REDACTED_GL]
+No of Products - 			1		
+No of Settlement Files -           1
+
+a.	MCI.AR.T464.M.[REDACTED_ID].D230314.T012312.A022
+
+This is when FCMB USD Prepaid card is used to carry out POS transactions. The settlement file comes in text file and contains a lot of other transaction type. This file needs to be broken down before pointing each of the transaction type to the appropriate GLs.
+For the transaction type for this account, both the credit and the debit to the GL are passed manually. The credits are posted line by line per transaction while the debits which represent the settlement is posted bulk and the reports behind the settlement bulk amount posted in used for the matching of the line by line credit posted.
+The reconciliation parameter for matching is AUTHORIZATION ID and it is usually 6 digits. This is contained in both reports (Finacle & Settlement).
+
+********************************************************************************
+
+
+
+
+
+48) Account Name -		VISACARD PAYABLE A/C
+GL Number -			[REDACTED_GL]
+No of Products - 			1		
+No of Settlement Files -           1
+
+
+a.	ORIGINAL TRANSACTION
+This is An ATM transaction carried out using FCMB credit cards on other Banks’ ATM terminals.
+There is no on-line-real-time entries for this category of transactions.
+Network International (NI) will provide a posting file for manual upload which will be used to debit customer and credit this account.
+The same NI will provide settlement file bulk debit of which will be positioned in this GL and the line by line items will used to match the credit already posted into the GL using Auth IDs.
+The reconciliation parameter are Auth ID in column Y, Amount in column L and account number in column E which is in the settlement report.
+PLEASE NOTE: MAKE USE OF ROU ATM.
+********************************************************************************
+
+
+
+
+
+
+
+
+
+
+
+
+49) Account Name -		VISA CORRESPONDENCE
+GL Number -			[REDACTED_GL]
+No of Products - 			1		
+No of Settlement Files -           1
+
+a.	FCMB-TRXN-550.033 01 02 2023.xlsx
+
+This is an international ROU POS/WEB transaction. Filter the report first according to column A and pick only card PAN that starts with card BIN- [REDACTED_BIN], [REDACTED_BIN] and [REDACTED_BIN] and then according to column AA and pick only POS/WEB transactions and then by column AD to pick only ‘INTERNATIONAL’. The Finacle items are uploaded manually with the Auth ID on the column named ‘REFERENCE’. Look for the same Auth ID in the extracted settlement file on column Y. The Auth ID is usually 6 digit number. The amount is on column L. Set the matching rules with the Auth ID plus the amount to make it strong for reconciliation.
+
+******************************************************************************
+
+
+50) Account Name -		INTERSWITCH PAYABLE-POS
+GL Number -			[REDACTED_GL]
+No of Products - 			1		
+No of Settlement Files -           1
+
+
+a.	FCMB_NIBSS_POS_Remote_Report_PR_2023_03_13_064851.csv
+Filter by the PAN and take only card PAN-[REDACTED_BIN]. The reconciliation parameter is arrived at by concatenating the masked PAN, Retrieval_Reference_Nr and the Tran_Amount_Req. 
+On Finacle, extract the Retrival Reference Number on the Tran_Remarks column from left which is 12 digit characted. Concatenate Ref_Num, the extracted RRN and the amount.
+
+*******************************************************************************
+51) Account Name -		VISA CORRESPONDENCE
+GL Number -			[REDACTED_GL]
+No of Products - 			1		
+No of Settlement Files -           1
+
+a.	AccountStatementListResults
+This is a NOSTRO report that is updated daily and it is to compare what is positioned in the GL with what is in the report to be sure there is no disparity between what is posted and what is in the report.
+
+There is no reconciliation parameter perse. Just compare the Amount on column K with what is posted into the GL and be sure that they are the same.
+***************************************************************************
+
+52) Account Name -		VAS2NET
+GL Number -			[REDACTED_GL]
+No of Products - 			1		
+No of Settlement Files -           1
+a.	SUCCESSFUL DIGITALAPP  AIRTIME DD MMM YYYY
+On the column named Request ID on the settlement file, extract from the right 16 digit. This same number is on the column named TRAN_RMKS on Finacle download. Also extract the last 16 digit for matching to take place. There file contains both AIRTIME TOP UP and DATA and the two should be read. All sheets on the file dropped either AIRTIME and DATA should be read.
+
+*****************************************************************************
+
+53) Account Name -		ATM QUICKTELLER ACCT
+GL Number -			[REDACTED_GL]
+No of Products - 			1		
+No of Settlement Files -           1
+a.	FCMB_PAYDirect_Settlement_Details_YYYYDDMM
+Filtering condition for statement:
+On column S named ‘ToAccount’, filter by the GL account number NGNLI99924430062. The reconciliation parameter set for this account is the column named RetrievalRef.
+
+On the internal record, the reference number is extracted from either the tran_particular column or the first 12 digit from left of the tran_remarks column.
+
+Run v-lookup of the two reports to identify the matched items.
+
+*******************************************************************************
+
+54) Account Name -		ZONESWITCH RECEIVABLE ACCOUNT
+GL Number -			[REDACTED_GL]
+No of Products - 			1		
+No of Settlement Files -           1
+
+a.	214TransactionsforSettlementBatch_XX_XX-XX-XX-YYYY.xlsx
+
+
+
+
+Sort according to the the column named the ‘Acquirer’ and throw away anything that is not FCMB.
+Then sort according to the column named ‘Masked PAN’ and throw away card PAN that starts with ‘4’ and 506’. The rest are MasterCard for this account.
+Then sort according to the column named ‘IsReversal’. Separate the TRUE from FALSE. Run v-look up between the TRUE and FALSE to remove auto reversed transactions.
+
+The reference number for reconciliation on Finacle is extracted from tran_particuar or tran_remarks columns.
+
+
+**************************************************************************
+
+55) Account Name -		MASTERCARD ROU CHARGEBACK ACCT
+GL Number -			[REDACTED_GL]	
+No of Products - 			1		
+No of Settlement Files -           1
+
+
+This is An ATM, POS and WEB transactions carried out using FCMB credit cards on other Banks’ ATM terminals.
+Bulk settlement credit for chargeback and bulk settlement Debit for re-presentment were passed to this account.
+To separate POS, WEB AND ATM, sort on Brand in Column Q, then transactions with C12 are ATM while MD1 are POS.
+Then sort on Replacement AmountLocal on column AA to differentiate chargeback from representment.
+The reconciliation parameter is Switch Serial number in column C
+*******************************************************************
+
+
+
+55) Account Name -		CORAL PAYBILLS SUSPENSE ACCOUNT
+GL Number -			[REDACTED_GL]	
+No of Products - 			1		
+No of Settlement Files -           1
+
+
+
+a.	FCMB-BILLERS-SUMMARY-REPORT-DD-MM-YYYY
+This is a bill payment transactions carried out by FCMB customers on Coralpay platform.
+
+
+
+Filtering conditions
+In the settlement file, the reference for matching is on the column named ‘paymentReference’. Filter and retain only those references that start with MBTRNG. The amount is on the column named ‘amount’
+On the Finacle report, the reference is on the column named ‘TRAN_RMKS’ and they are denoted with MBTRNG.
+
+
+*******************************************************************a
+
+56) Account Name -		ZONESWITCH VERVE RECEIVABLE ACCOUNT
+GL Number -			[REDACTED_GL]	
+No of Products - 			1		
+No of Settlement Files -           1
+
+This is cash withdrawal of other Banks’ cards on FCMB ATM.
+
+Filtering conditions for external file named .
+
+a.	214TransactionsforSettlementBatch_00_MM-DD YYYY
+On column F named Masked PAN, pick only PAN that starts with 506. On column M named Acquirer, sort and retain only FCMB. Then sort by column I named Transaction Status. On column L, look for those RRN that appear twice whose status is one Successful and one Reversed and expunge them. The worksheet to read is named Records
+
+On Finacle, the RRN is the first 12 digit on the TRAN_REMARKS column.
+
+The reconciliation parameter is the RRN.
+
+****************************************************************************
+
+59) Account Name -		ZONESWITCH VISA RECEIVABLE ACCOUNT
+GL Number -			[REDACTED_GL]	
+No of Products - 			1		
+No of Settlement Files -           1
+
+
+a.	214TransactionsforSettlementBatch_00_MM-DD YYYY
+
+On column F named Masked PAN, pick only PAN that starts with 4. On column M named Acquirer, sort and retain only FCMB. Then sort by column I named Transaction Status. On column L, look for those RRN that appear twice whose status is one Successful and one Reversed and expunge them. The worksheet to read is named Records
+
+
+On Finacle, the RRN is the first 12 digit on the TRAN_REMARKS column.
+
+The reconciliation parameter is the RRN.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+            FCMB LIMITED     	 	PRECISE FINANCIAL SYSTEMS LIMITED        
+		
+Name: [REDACTED_NAME]                                    Name: [REDACTED_NAME] 
+Designation: Reconciliation Officer                  Designation: PROJECT MANAGER
+Signature:                                   Signature: 
+Date: 09 June, 2023                                      Date: 	06 June, 2023 
+
