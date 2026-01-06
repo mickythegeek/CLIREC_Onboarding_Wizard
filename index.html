@@ -1,191 +1,28 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CLIREC Onboarding Wizard</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" href="/CLIREC_Logo.png" />
+    <title>CLIREC - Onboarding Wizard</title>
+    <meta name="description" content="CLIREC Account Configuration Wizard" />
+    <meta name="author" content="CLIREC" />
 
-    <!-- Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- TODO: Update og:title to match your application name -->
+    <meta property="og:title" content="Lovable App" />
+    <meta property="og:description" content="Lovable Generated Project" />
+    <meta property="og:type" content="website" />
+    <meta property="og:image" content="https://lovable.dev/opengraph-image-p98pqg.png" />
 
-    <link rel="stylesheet" href="style.css">
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:site" content="@Lovable" />
+    <meta name="twitter:image" content="https://lovable.dev/opengraph-image-p98pqg.png" />
 </head>
 
 <body>
-    <!-- Background Elements -->
-    <div class="blob blob-1"></div>
-    <div class="blob blob-2"></div>
-
-    <div class="app-container">
-        <header>
-            <h1>CLIREC Onboarding</h1>
-            <div class="wizard-progress" id="wizardProgress">
-                <!-- Injected via JS -->
-            </div>
-        </header>
-
-        <main id="wizardContent">
-            <!-- Step 1: Client Information -->
-            <div class="wizard-step active" data-step="1">
-                <h2>Client Information</h2>
-                <div class="form-group">
-                    <label for="clientName">Client Name</label>
-                    <input type="text" id="clientName" placeholder="e.g. Acme Corp">
-                </div>
-                <div class="form-group">
-                    <label for="clientId">Client ID / Code</label>
-                    <input type="text" id="clientId" placeholder="e.g. ACME-001">
-                </div>
-                <div class="form-group">
-                    <label for="region">Region</label>
-                    <select id="region">
-                        <option value="emea">EMEA</option>
-                        <option value="apac">APAC</option>
-                        <option value="americas">Americas</option>
-                    </select>
-                </div>
-            </div>
-
-            <!-- Step 2: Account Definition -->
-            <div class="wizard-step" data-step="2">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
-                    <h2>Accounts Configuration</h2>
-                    <button id="btnAddAccount" class="btn-primary" style="font-size: 0.9rem; padding: 0.5rem 1rem;">+
-                        Add Account</button>
-                </div>
-
-                <div id="accountsContainer">
-                    <!-- Accounts will be added here dynamically -->
-                </div>
-
-                <!-- Template for an Account Block (Hidden) -->
-                <template id="accountTemplate">
-                    <div class="account-block" style="
-                        background: rgba(255,255,255,0.03); 
-                        border: 1px solid var(--glass-border); 
-                        padding: 1.5rem; 
-                        border-radius: 16px; 
-                        margin-bottom: 2rem; 
-                        position: relative;
-                        animation: fadeIn 0.3s ease-out;
-                    ">
-                        <button class="btn-remove-account" style="
-                            position: absolute; 
-                            top: 1rem; 
-                            right: 1rem; 
-                            background: rgba(239, 68, 68, 0.2); 
-                            color: #fca5a5; 
-                            padding: 0.25rem 0.75rem; 
-                            font-size: 0.8rem;
-                        ">Remove</button>
-
-                        <h3 class="account-title" style="margin-bottom: 1rem; color: var(--primary-color);">Account #1
-                        </h3>
-
-                        <div class="grid-2"
-                            style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
-                            <div class="form-group">
-                                <label>Account Name</label>
-                                <input type="text" class="acc-name" placeholder="e.g. NIBSS RECEIVABLE">
-                            </div>
-                            <div class="form-group">
-                                <label>GL Number</label>
-                                <input type="text" class="acc-gl" placeholder="e.g. NGNAS99916150042">
-                            </div>
-                        </div>
-
-                        <div class="grid-2"
-                            style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
-                            <div class="form-group">
-                                <label>Product Count</label>
-                                <input type="number" class="acc-products" placeholder="0">
-                            </div>
-                            <div class="form-group">
-                                <label>Settlement Files Count</label>
-                                <input type="number" class="acc-file-count-manual" placeholder="0 (Manual Entry)">
-                            </div>
-                        </div>
-
-                        <!-- Dynamic Files Section -->
-                        <div class="files-section"
-                            style="margin-top: 1.5rem; border-top: 1px solid var(--glass-border); padding-top: 1rem;">
-                            <div
-                                style="display: flex; justify-content: space-between; margin-bottom: 0.5rem; align-items: center;">
-                                <label style="margin-bottom: 0;">Settlement Files & Rules</label>
-                                <button type="button" class="btn-add-file btn-secondary"
-                                    style="font-size: 0.8rem; padding: 0.2rem 0.8rem;">+ Add File</button>
-                            </div>
-                            <div class="files-container"></div>
-                        </div>
-
-                        <!-- General Reconciliation Logic -->
-                        <div class="form-group" style="margin-top: 1rem;">
-                            <label>General Reconciliation / Matching Logic</label>
-                            <textarea class="acc-logic" rows="3"
-                                placeholder="e.g. Match Column A in Ledger with Column B in Statement..."></textarea>
-                        </div>
-                    </div>
-                </template>
-
-                <!-- Template for a File Row (Hidden) -->
-                <template id="fileTemplate">
-                    <div class="file-row" style="
-                        display: grid; 
-                        grid-template-columns: 2fr 3fr 30px; 
-                        gap: 0.5rem; 
-                        margin-bottom: 0.5rem; 
-                        align-items: start;
-                    ">
-                        <input type="text" class="file-name" placeholder="File Name Pattern">
-                        <textarea class="file-rules" rows="1" placeholder="Filter/Extraction Rules"
-                            style="resize: vertical; min-height: 42px;"></textarea>
-                        <button type="button" class="btn-remove-file" style="
-                            color: #fca5a5; 
-                            background: transparent; 
-                            font-size: 1.2rem; 
-                            padding: 0;
-                            height: 42px;
-                            display: flex;
-                            align-items: center;
-                            justify-content: center;
-                        ">&times;</button>
-                    </div>
-                </template>
-
-            </div>
-
-            <!-- Step 3: Review & JSON -->
-            <div class="wizard-step" data-step="3">
-                <h2>Review & Generate</h2>
-                <p style="color: var(--text-muted); margin-bottom: 20px;">
-                    Review the configuration below before generating the onboarding JSON file.
-                </p>
-                <div id="jsonPreview" style="
-                    background: rgba(0,0,0,0.3); 
-                    padding: 1.5rem; 
-                    border-radius: 12px; 
-                    font-family: monospace; 
-                    white-space: pre-wrap;
-                    color: #a5b4fc;
-                    border: 1px solid var(--glass-border);
-                    max-height: 300px;
-                    overflow-y: auto;
-                ">
-                    <!-- JSON will appear here -->
-                </div>
-            </div>
-        </main>
-
-        <footer>
-            <button id="btnBack" class="btn-secondary" style="visibility: hidden;">Back</button>
-            <button id="btnNext" class="btn-primary">Next Step</button>
-        </footer>
-    </div>
-
-    <script src="script.js"></script>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
 </body>
 
 </html>
