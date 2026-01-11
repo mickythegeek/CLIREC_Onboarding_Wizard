@@ -22,3 +22,19 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# .NET Backend
+api/bin/
+api/obj/
+api/*.user
+api/appsettings.*.local.json
+api/secrets.json
+
+# User secrets (local machine only)
+*.pfx
+*.pem
+
+# Environment files with real credentials
+.env
+.env.local
+.env.production

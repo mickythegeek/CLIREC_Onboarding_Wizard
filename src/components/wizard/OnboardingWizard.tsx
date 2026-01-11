@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { StepIndicator } from "./StepIndicator";
 import { ClientInfoStep } from "./ClientInfoStep";
@@ -6,8 +7,9 @@ import { AccountsConfigStep } from "./AccountsConfigStep";
 import { ReviewStep } from "./ReviewStep";
 import { WizardData, Account, ClientInfo } from "@/types/wizard";
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowLeft, ArrowRight, Sparkles, CheckCircle2 } from "lucide-react";
+import { ArrowLeft, ArrowRight, Sparkles, Loader2 } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
+import { requirementsApi } from "@/services/api";
 
 const steps = [
     { id: 1, title: "Client Info", description: "Basic details" },
@@ -53,6 +55,53 @@ const initialClientInfo: ClientInfo = {
     clientId: "",
     region: "",
 };
+
+function SubmitButton({ wizardData }: { wizardData: WizardData }) {
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const navigate = useNavigate();
+
+    const handleSubmit = async () => {
+        setIsSubmitting(true);
+        try {
+            await requirementsApi.createRequirement({
+                clientName: wizardData.clientInfo.clientName,
+                clientId: wizardData.clientInfo.clientId,
+                region: wizardData.clientInfo.region,
+                responseJson: JSON.stringify(wizardData),
+                status: "Submitted",
+            });
+            toast({
+                title: "Configuration Complete!",
+                description: "Your reconciliation setup has been submitted successfully.",
+            });
+            navigate("/dashboard");
+        } catch (error: any) {
+            toast({
+                title: "Submission Failed",
+                description: error.response?.data?.message || "Failed to submit. Please try again.",
+                variant: "destructive",
+            });
+        } finally {
+            setIsSubmitting(false);
+        }
+    };
+
+    return (
+        <Button onClick={handleSubmit} disabled={isSubmitting}>
+            {isSubmitting ? (
+                <>
+                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                    Submitting...
+                </>
+            ) : (
+                <>
+                    <Sparkles className="w-4 h-4 mr-2" />
+                    Finish Setup
+                </>
+            )}
+        </Button>
+    );
+}
 
 export function OnboardingWizard() {
     const [currentStep, setCurrentStep] = useState(1);
@@ -192,17 +241,7 @@ export function OnboardingWizard() {
                                 <ArrowRight className="w-4 h-4 ml-2" />
                             </Button>
                         ) : (
-                            <Button
-                                onClick={() => {
-                                    toast({
-                                        title: "Configuration Complete!",
-                                        description: "Your reconciliation setup has been generated successfully.",
-                                    });
-                                }}
-                            >
-                                <Sparkles className="w-4 h-4 mr-2" />
-                                Finish Setup
-                            </Button>
+                            <SubmitButton wizardData={wizardData} />
                         )}
                     </div>
                 </motion.div>
