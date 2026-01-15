@@ -119,7 +119,7 @@ const LandingPage = () => {
                         transition={{ duration: 0.6, delay: 0.1 }}
                         className="text-5xl md:text-7xl font-bold mb-6 leading-tight"
                     >
-                        Configure Account
+                        Gather Account
                         <br />
                         <span className="text-gradient">Requirements</span>
                         <br />
@@ -132,7 +132,7 @@ const LandingPage = () => {
                         transition={{ duration: 0.6, delay: 0.2 }}
                         className="text-xl text-muted-foreground max-w-2xl mx-auto mb-10"
                     >
-                        The CLIREC Onboarding Wizard guides you through complex bank reconciliation
+                        This tool guides you through complex bank reconciliation
                         configurations. No more spreadsheets or confusing documents.
                     </motion.p>
 
