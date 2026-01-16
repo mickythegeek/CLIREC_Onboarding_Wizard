@@ -170,7 +170,7 @@ export default function Dashboard() {
                         <h1 className="text-3xl font-bold text-foreground">
                             {isAdmin ? 'All Submissions' : 'My Submissions'}
                         </h1>
-                        <Link to="/">
+                        <Link to="/wizard">
                             <Button>
                                 <Plus className="w-4 h-4 mr-2" />
                                 New Requirement
@@ -195,7 +195,7 @@ export default function Dashboard() {
                         <p className="text-muted-foreground mb-4">
                             Create your first account requirement to get started.
                         </p>
-                        <Link to="/">
+                        <Link to="/wizard">
                             <Button>
                                 <Plus className="w-4 h-4 mr-2" />
                                 Create Requirement

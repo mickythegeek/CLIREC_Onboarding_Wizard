@@ -14,9 +14,9 @@ import {
 const LandingPage = () => {
     const { isAuthenticated, isLoading } = useAuth();
 
-    // Redirect authenticated users to wizard
+    // Redirect authenticated users to dashboard
     if (!isLoading && isAuthenticated) {
-        return <Navigate to="/wizard" replace />;
+        return <Navigate to="/dashboard" replace />;
     }
 
     const features = [
