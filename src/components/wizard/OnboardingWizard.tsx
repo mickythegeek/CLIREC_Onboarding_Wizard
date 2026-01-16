@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { StepIndicator } from "./StepIndicator";
@@ -7,7 +7,7 @@ import { AccountsConfigStep } from "./AccountsConfigStep";
 import { ReviewStep } from "./ReviewStep";
 import { WizardData, Account, ClientInfo } from "@/types/wizard";
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowLeft, ArrowRight, Sparkles, Loader2 } from "lucide-react";
+import { ArrowLeft, ArrowRight, Sparkles, Loader2, Save } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import { requirementsApi } from "@/services/api";
 
@@ -56,28 +56,44 @@ const initialClientInfo: ClientInfo = {
     region: "",
 };
 
-function SubmitButton({ wizardData }: { wizardData: WizardData }) {
+interface SubmitButtonProps {
+    wizardData: WizardData;
+    editId?: number;
+}
+
+function SubmitButton({ wizardData, editId }: SubmitButtonProps) {
     const [isSubmitting, setIsSubmitting] = useState(false);
     const navigate = useNavigate();
+    const isEditMode = editId !== undefined;
 
     const handleSubmit = async () => {
         setIsSubmitting(true);
         try {
-            await requirementsApi.createRequirement({
+            const payload = {
                 clientName: wizardData.clientInfo.clientName,
                 clientId: wizardData.clientInfo.clientId,
                 region: wizardData.clientInfo.region,
                 responseJson: JSON.stringify(wizardData),
                 status: "Submitted",
-            });
-            toast({
-                title: "Configuration Complete!",
-                description: "Your reconciliation setup has been submitted successfully.",
-            });
+            };
+
+            if (isEditMode) {
+                await requirementsApi.updateRequirement(editId, payload);
+                toast({
+                    title: "Changes Saved!",
+                    description: "Your configuration has been updated successfully.",
+                });
+            } else {
+                await requirementsApi.createRequirement(payload);
+                toast({
+                    title: "Configuration Complete!",
+                    description: "Your reconciliation setup has been submitted successfully.",
+                });
+            }
             navigate("/dashboard");
         } catch (error: any) {
             toast({
-                title: "Submission Failed",
+                title: isEditMode ? "Update Failed" : "Submission Failed",
                 description: error.response?.data?.message || "Failed to submit. Please try again.",
                 variant: "destructive",
             });
@@ -91,24 +107,78 @@ function SubmitButton({ wizardData }: { wizardData: WizardData }) {
             {isSubmitting ? (
                 <>
                     <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                    Submitting...
+                    {isEditMode ? "Saving..." : "Submitting..."}
                 </>
             ) : (
                 <>
-                    <Sparkles className="w-4 h-4 mr-2" />
-                    Finish Setup
+                    {isEditMode ? (
+                        <>
+                            <Save className="w-4 h-4 mr-2" />
+                            Save Changes
+                        </>
+                    ) : (
+                        <>
+                            <Sparkles className="w-4 h-4 mr-2" />
+                            Finish Setup
+                        </>
+                    )}
                 </>
             )}
         </Button>
     );
 }
 
-export function OnboardingWizard() {
+interface OnboardingWizardProps {
+    editId?: number;
+}
+
+export function OnboardingWizard({ editId }: OnboardingWizardProps) {
     const [currentStep, setCurrentStep] = useState(1);
+    const [isLoading, setIsLoading] = useState(false);
     const [wizardData, setWizardData] = useState<WizardData>({
         clientInfo: initialClientInfo,
         accounts: [createEmptyAccount()],
     });
+
+    const isEditMode = editId !== undefined;
+
+    // Load existing data when editing
+    useEffect(() => {
+        if (editId) {
+            setIsLoading(true);
+            requirementsApi.getRequirement(editId)
+                .then((response) => {
+                    const data = response.data;
+                    // Parse the responseJson to get the full wizard data
+                    if (data.responseJson) {
+                        try {
+                            const parsedData = JSON.parse(data.responseJson);
+                            setWizardData(parsedData);
+                        } catch {
+                            // Fallback: construct from fields
+                            setWizardData({
+                                clientInfo: {
+                                    clientName: data.clientName || "",
+                                    clientId: data.clientId || "",
+                                    region: data.region || "",
+                                },
+                                accounts: [createEmptyAccount()],
+                            });
+                        }
+                    }
+                })
+                .catch((error) => {
+                    toast({
+                        title: "Failed to Load",
+                        description: error.response?.data?.message || "Could not load requirement data.",
+                        variant: "destructive",
+                    });
+                })
+                .finally(() => {
+                    setIsLoading(false);
+                });
+        }
+    }, [editId]);
 
     const validateStep = (step: number): boolean => {
         if (step === 1) {
@@ -156,6 +226,17 @@ export function OnboardingWizard() {
         setWizardData((prev) => ({ ...prev, accounts }));
     };
 
+    if (isLoading) {
+        return (
+            <div className="min-h-screen flex items-center justify-center">
+                <div className="text-center">
+                    <Loader2 className="w-8 h-8 mx-auto animate-spin text-primary mb-4" />
+                    <p className="text-muted-foreground">Loading requirement...</p>
+                </div>
+            </div>
+        );
+    }
+
     return (
         <div className="min-h-screen flex flex-col">
             {/* Background Elements */}
@@ -184,10 +265,12 @@ export function OnboardingWizard() {
                         className="text-center mb-8"
                     >
                         <h1 className="text-3xl sm:text-4xl font-bold text-foreground mb-2">
-                            Accounts Requirements Gathering
+                            {isEditMode ? "Edit Requirement" : "Accounts Requirements Gathering"}
                         </h1>
                         <p className="text-muted-foreground">
-                            Configure your bank reconciliation setup in a few simple steps
+                            {isEditMode
+                                ? "Modify your existing configuration"
+                                : "Configure your bank reconciliation setup in a few simple steps"}
                         </p>
                     </motion.div>
 
@@ -241,7 +324,7 @@ export function OnboardingWizard() {
                                 <ArrowRight className="w-4 h-4 ml-2" />
                             </Button>
                         ) : (
-                            <SubmitButton wizardData={wizardData} />
+                            <SubmitButton wizardData={wizardData} editId={editId} />
                         )}
                     </div>
                 </motion.div>

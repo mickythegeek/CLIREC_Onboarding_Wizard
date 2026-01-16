@@ -257,6 +257,11 @@ export default function Dashboard() {
                                                 <option value="Rejected">Rejected</option>
                                             </select>
                                         )}
+                                        <Link to={`/wizard/edit/${req.id}`}>
+                                            <Button variant="ghost" size="sm">
+                                                <Edit className="w-4 h-4" />
+                                            </Button>
+                                        </Link>
                                         <Button variant="ghost" size="sm" onClick={() => handleDownload(req.id)}>
                                             <Download className="w-4 h-4" />
                                         </Button>

@@ -7,6 +7,7 @@ import { AuthProvider } from "@/contexts/AuthContext";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 import LandingPage from "./pages/LandingPage";
 import Index from "./pages/Index";
+import EditRequirement from "./pages/EditRequirement";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Dashboard from "./pages/Dashboard";
@@ -33,6 +34,14 @@ const App = () => (
                             element={
                                 <ProtectedRoute>
                                     <Index />
+                                </ProtectedRoute>
+                            }
+                        />
+                        <Route
+                            path="/wizard/edit/:id"
+                            element={
+                                <ProtectedRoute>
+                                    <EditRequirement />
                                 </ProtectedRoute>
                             }
                         />

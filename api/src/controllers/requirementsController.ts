@@ -3,6 +3,19 @@ import { AuthRequest } from '../middleware/auth';
 import AccountRequirement from '../models/AccountRequirement';
 import User from '../models/User';
 
+// Helper to transform snake_case DB fields to camelCase for frontend
+const transformRequirement = (r: any) => ({
+    id: r.id,
+    userId: r.user_id,
+    clientName: r.client_name,
+    clientId: r.client_id,
+    region: r.region,
+    responseJson: r.response_json,
+    status: r.status,
+    createdAt: r.created_at,
+    updatedAt: r.updated_at,
+});
+
 export const createRequirement = async (req: AuthRequest, res: Response) => {
     try {
         const { clientName, clientId, region, responseJson, status } = req.body;
@@ -16,7 +29,7 @@ export const createRequirement = async (req: AuthRequest, res: Response) => {
             status: status || 'Draft'
         });
 
-        res.status(201).json(requirement);
+        res.status(201).json(transformRequirement(requirement));
     } catch (error) {
         console.error('Create requirement error:', error);
         res.status(500).json({ message: 'Server error' });
@@ -29,7 +42,7 @@ export const getMyRequirements = async (req: AuthRequest, res: Response) => {
             where: { user_id: req.user.id },
             order: [['created_at', 'DESC']]
         });
-        res.json(requirements);
+        res.json(requirements.map(transformRequirement));
     } catch (error) {
         res.status(500).json({ message: 'Server error' });
     }
@@ -44,7 +57,7 @@ export const getRequirement = async (req: AuthRequest, res: Response) => {
         if (!requirement) {
             return res.status(404).json({ message: 'Requirement not found' });
         }
-        res.json(requirement);
+        res.json(transformRequirement(requirement));
     } catch (error) {
         res.status(500).json({ message: 'Server error' });
     }
@@ -70,7 +83,7 @@ export const updateRequirement = async (req: AuthRequest, res: Response) => {
             status
         });
 
-        res.json(requirement);
+        res.json(transformRequirement(requirement));
     } catch (error) {
         res.status(500).json({ message: 'Server error' });
     }
@@ -117,9 +130,9 @@ export const getAllRequirements = async (req: AuthRequest, res: Response) => {
             order: [['created_at', 'DESC']]
         });
 
-        // Transform to flat structure for frontend to match previous API contract
+        // Transform and add user info
         const data = requirements.map((r: any) => ({
-            ...r.toJSON(),
+            ...transformRequirement(r),
             userEmail: r.user?.email,
             userFullName: r.user?.full_name
         }));
@@ -138,7 +151,7 @@ export const updateStatus = async (req: AuthRequest, res: Response) => {
         }
 
         await requirement.update({ status: req.body.status });
-        res.json(requirement);
+        res.json(transformRequirement(requirement));
     } catch (error) {
         res.status(500).json({ message: 'Server error' });
     }

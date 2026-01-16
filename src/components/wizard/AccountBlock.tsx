@@ -170,7 +170,7 @@ export function AccountBlock({ account, index, onUpdate, onRemove, canRemove }: 
                                     </FormField>
 
                                     <FormField>
-                                        <FormLabel>Representative Account</FormLabel>
+                                        <FormLabel>Representative Account (GL)</FormLabel>
                                         <Input
                                             value={account.representativeAccount}
                                             onChange={(e) => updateField("representativeAccount", e.target.value)}
