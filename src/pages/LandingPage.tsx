@@ -119,9 +119,9 @@ const LandingPage = () => {
                         transition={{ duration: 0.6, delay: 0.1 }}
                         className="text-5xl md:text-7xl font-bold mb-6 leading-tight"
                     >
-                        Gather Account
+                        Account
                         <br />
-                        <span className="text-gradient">Requirements</span>
+                        <span className="text-gradient">Requirements Gathering</span>
                         <br />
                         With Ease
                     </motion.h1>
