@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { StepIndicator } from "./StepIndicator";
 import { ClientInfoStep } from "./ClientInfoStep";
@@ -9,7 +9,8 @@ import { WizardData, Account, ClientInfo } from "@/types/wizard";
 import { motion, AnimatePresence } from "framer-motion";
 import { ArrowLeft, ArrowRight, Sparkles, Loader2, Save } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
-import { requirementsApi } from "@/services/api";
+import { requirementsApi, adminApi } from "@/services/api";
+import { useAuth } from "@/contexts/AuthContext";
 
 const steps = [
     { id: 1, title: "Client Info", description: "Basic details" },
@@ -59,9 +60,10 @@ const initialClientInfo: ClientInfo = {
 interface SubmitButtonProps {
     wizardData: WizardData;
     editId?: number;
+    isAdminEdit?: boolean;
 }
 
-function SubmitButton({ wizardData, editId }: SubmitButtonProps) {
+function SubmitButton({ wizardData, editId, isAdminEdit }: SubmitButtonProps) {
     const [isSubmitting, setIsSubmitting] = useState(false);
     const navigate = useNavigate();
     const isEditMode = editId !== undefined;
@@ -78,7 +80,12 @@ function SubmitButton({ wizardData, editId }: SubmitButtonProps) {
             };
 
             if (isEditMode) {
-                await requirementsApi.updateRequirement(editId, payload);
+                // Use admin API if admin is editing
+                if (isAdminEdit) {
+                    await adminApi.updateRequirement(editId, payload);
+                } else {
+                    await requirementsApi.updateRequirement(editId, payload);
+                }
                 toast({
                     title: "Changes Saved!",
                     description: "Your configuration has been updated successfully.",
@@ -133,6 +140,7 @@ interface OnboardingWizardProps {
 }
 
 export function OnboardingWizard({ editId }: OnboardingWizardProps) {
+    const { isAdmin, isLoading: authLoading } = useAuth();
     const [currentStep, setCurrentStep] = useState(1);
     const [isLoading, setIsLoading] = useState(false);
     const [wizardData, setWizardData] = useState<WizardData>({
@@ -141,32 +149,41 @@ export function OnboardingWizard({ editId }: OnboardingWizardProps) {
     });
 
     const isEditMode = editId !== undefined;
+    // For edit mode, admin uses admin API to bypass ownership/lock checks
+    const isAdminEdit = isEditMode && isAdmin;
 
     // Load existing data when editing
     useEffect(() => {
+        // Wait for auth to be ready before fetching
+        if (authLoading) return;
+
         if (editId) {
             setIsLoading(true);
-            requirementsApi.getRequirement(editId)
-                .then((response) => {
-                    const data = response.data;
-                    // Parse the responseJson to get the full wizard data
-                    if (data.responseJson) {
-                        try {
-                            const parsedData = JSON.parse(data.responseJson);
-                            setWizardData(parsedData);
-                        } catch {
-                            // Fallback: construct from fields
-                            setWizardData({
-                                clientInfo: {
-                                    clientName: data.clientName || "",
-                                    clientId: data.clientId || "",
-                                    region: data.region || "",
-                                },
-                                accounts: [createEmptyAccount()],
-                            });
-                        }
+            // Use admin API if admin is editing
+            const fetchPromise = isAdmin
+                ? adminApi.getRequirement(editId)
+                : requirementsApi.getRequirement(editId);
+
+            fetchPromise.then((response) => {
+                const data = response.data;
+                // Parse the responseJson to get the full wizard data
+                if (data.responseJson) {
+                    try {
+                        const parsedData = JSON.parse(data.responseJson);
+                        setWizardData(parsedData);
+                    } catch {
+                        // Fallback: construct from fields
+                        setWizardData({
+                            clientInfo: {
+                                clientName: data.clientName || "",
+                                clientId: data.clientId || "",
+                                region: data.region || "",
+                            },
+                            accounts: [createEmptyAccount()],
+                        });
                     }
-                })
+                }
+            })
                 .catch((error) => {
                     toast({
                         title: "Failed to Load",
@@ -178,7 +195,7 @@ export function OnboardingWizard({ editId }: OnboardingWizardProps) {
                     setIsLoading(false);
                 });
         }
-    }, [editId]);
+    }, [editId, isAdmin, authLoading]);
 
     const validateStep = (step: number): boolean => {
         if (step === 1) {
@@ -248,10 +265,17 @@ export function OnboardingWizard({ editId }: OnboardingWizardProps) {
             {/* Header */}
             <header className="relative z-10 border-b border-border/50 glass">
                 <div className="container max-w-5xl mx-auto px-4 py-4">
-                    <div className="flex items-center justify-center">
+                    <div className="flex items-center justify-between">
+                        <Link to="/dashboard">
+                            <Button variant="ghost" size="sm">
+                                <ArrowLeft className="w-4 h-4 mr-2" />
+                                Go Home
+                            </Button>
+                        </Link>
                         <div className="h-10 w-auto">
                             <img src="/CLIREC_Logo.png" alt="CLIREC Logo" className="h-full w-auto object-contain" />
                         </div>
+                        <div className="w-24" /> {/* Spacer for balance */}
                     </div>
                 </div>
             </header>
@@ -274,8 +298,10 @@ export function OnboardingWizard({ editId }: OnboardingWizardProps) {
                         </p>
                     </motion.div>
 
-                    <div className="max-w-2xl mx-auto">
-                        <StepIndicator steps={steps} currentStep={currentStep} />
+                    <div className="flex justify-center">
+                        <div className="max-w-2xl w-full">
+                            <StepIndicator steps={steps} currentStep={currentStep} />
+                        </div>
                     </div>
                 </div>
 
@@ -324,7 +350,7 @@ export function OnboardingWizard({ editId }: OnboardingWizardProps) {
                                 <ArrowRight className="w-4 h-4 ml-2" />
                             </Button>
                         ) : (
-                            <SubmitButton wizardData={wizardData} editId={editId} />
+                            <SubmitButton wizardData={wizardData} editId={editId} isAdminEdit={isAdminEdit} />
                         )}
                     </div>
                 </motion.div>

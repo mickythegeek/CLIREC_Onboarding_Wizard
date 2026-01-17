@@ -16,6 +16,8 @@ import {
     Clock,
     LogOut,
     Shield,
+    Lock,
+    Unlock,
 } from 'lucide-react';
 
 interface Requirement {
@@ -25,6 +27,7 @@ interface Requirement {
     clientId: string;
     region: string;
     status: string;
+    isLocked: boolean;
     createdAt: string;
     updatedAt: string | null;
     userEmail?: string;
@@ -109,6 +112,36 @@ export default function Dashboard() {
             toast({
                 title: 'Error',
                 description: 'Failed to update status.',
+                variant: 'destructive',
+            });
+        }
+    };
+
+    const handleLockToggle = async (id: number, currentlyLocked: boolean) => {
+        try {
+            if (currentlyLocked) {
+                await adminApi.unlockRequirement(id);
+                setRequirements((prev) =>
+                    prev.map((r) => (r.id === id ? { ...r, isLocked: false } : r))
+                );
+                toast({
+                    title: 'Unlocked',
+                    description: 'Requirement is now editable.',
+                });
+            } else {
+                await adminApi.lockRequirement(id);
+                setRequirements((prev) =>
+                    prev.map((r) => (r.id === id ? { ...r, isLocked: true } : r))
+                );
+                toast({
+                    title: 'Locked',
+                    description: 'Requirement is now protected from edits.',
+                });
+            }
+        } catch (error) {
+            toast({
+                title: 'Error',
+                description: 'Failed to update lock status.',
                 variant: 'destructive',
             });
         }
@@ -257,19 +290,41 @@ export default function Dashboard() {
                                                 <option value="Rejected">Rejected</option>
                                             </select>
                                         )}
-                                        <Link to={`/wizard/edit/${req.id}`}>
-                                            <Button variant="ghost" size="sm">
+                                        {/* Lock/Unlock toggle for admins */}
+                                        {isAdmin && (
+                                            <Button
+                                                variant="ghost"
+                                                size="sm"
+                                                onClick={() => handleLockToggle(req.id, req.isLocked)}
+                                                className={req.isLocked ? 'text-amber-500' : 'text-muted-foreground'}
+                                                title={req.isLocked ? 'Unlock' : 'Lock'}
+                                            >
+                                                {req.isLocked ? <Lock className="w-4 h-4" /> : <Unlock className="w-4 h-4" />}
+                                            </Button>
+                                        )}
+                                        {/* Edit - disabled if locked (for non-admins) */}
+                                        {(!req.isLocked || isAdmin) ? (
+                                            <Link to={`/wizard/edit/${req.id}`}>
+                                                <Button variant="ghost" size="sm">
+                                                    <Edit className="w-4 h-4" />
+                                                </Button>
+                                            </Link>
+                                        ) : (
+                                            <Button variant="ghost" size="sm" disabled title="Locked">
                                                 <Edit className="w-4 h-4" />
                                             </Button>
-                                        </Link>
+                                        )}
                                         <Button variant="ghost" size="sm" onClick={() => handleDownload(req.id)}>
                                             <Download className="w-4 h-4" />
                                         </Button>
+                                        {/* Delete - disabled if locked (for non-admins) */}
                                         <Button
                                             variant="ghost"
                                             size="sm"
                                             className="text-destructive hover:text-destructive"
                                             onClick={() => handleDelete(req.id)}
+                                            disabled={req.isLocked && !isAdmin}
+                                            title={req.isLocked && !isAdmin ? 'Locked' : 'Delete'}
                                         >
                                             <Trash2 className="w-4 h-4" />
                                         </Button>

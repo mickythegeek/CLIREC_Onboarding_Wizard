@@ -16,9 +16,9 @@ interface StepIndicatorProps {
 export function StepIndicator({ steps, currentStep }: StepIndicatorProps) {
     return (
         <div className="w-full">
-            <div className="flex items-center justify-between">
+            <div className="flex items-center justify-center gap-4">
                 {steps.map((step, index) => (
-                    <div key={step.id} className="flex items-center flex-1">
+                    <div key={step.id} className="flex items-center">
                         <div className="flex flex-col items-center">
                             <motion.div
                                 initial={false}
@@ -53,7 +53,7 @@ export function StepIndicator({ steps, currentStep }: StepIndicatorProps) {
                             </div>
                         </div>
                         {index < steps.length - 1 && (
-                            <div className="flex-1 mx-4 mb-10">
+                            <div className="w-16 mx-2 mb-10">
                                 <div className="h-0.5 bg-border rounded-full overflow-hidden">
                                     <motion.div
                                         initial={{ width: "0%" }}

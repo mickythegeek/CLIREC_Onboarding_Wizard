@@ -78,8 +78,24 @@ export const requirementsApi = {
 export const adminApi = {
     getAllRequirements: () => api.get('/admin/requirements'),
 
+    getRequirement: (id: number) => api.get(`/admin/requirements/${id}`),
+
+    updateRequirement: (id: number, data: {
+        clientName?: string;
+        clientId?: string;
+        region?: string;
+        responseJson?: string;
+        status?: string;
+    }) => api.put(`/admin/requirements/${id}`, data),
+
     updateStatus: (id: number, status: string) =>
         api.put(`/admin/requirements/${id}/status`, { status }),
+
+    lockRequirement: (id: number) =>
+        api.put(`/admin/requirements/${id}/lock`),
+
+    unlockRequirement: (id: number) =>
+        api.put(`/admin/requirements/${id}/unlock`),
 };
 
 export default api;

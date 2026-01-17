@@ -10,6 +10,7 @@ class AccountRequirement extends Model {
     public region!: string;
     public response_json!: string;
     public status!: string;
+    public is_locked!: boolean;
     public readonly created_at!: Date;
     public readonly updated_at!: Date;
 }
@@ -48,6 +49,10 @@ AccountRequirement.init(
         status: {
             type: DataTypes.STRING(50),
             defaultValue: 'Draft',
+        },
+        is_locked: {
+            type: DataTypes.BOOLEAN,
+            defaultValue: false,
         },
     },
     {
