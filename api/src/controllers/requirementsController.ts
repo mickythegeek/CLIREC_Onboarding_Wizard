@@ -2,6 +2,7 @@ import { Response } from 'express';
 import { AuthRequest } from '../middleware/auth';
 import AccountRequirement from '../models/AccountRequirement';
 import User from '../models/User';
+import { logAudit, getAuditHistory, transformAuditLog } from '../services/auditService';
 
 // Helper to transform snake_case DB fields to camelCase for frontend
 const transformRequirement = (r: any) => ({
@@ -29,6 +30,14 @@ export const createRequirement = async (req: AuthRequest, res: Response) => {
             response_json: responseJson,
             status: status || 'Draft',
             is_locked: false
+        });
+
+        // Log audit
+        await logAudit({
+            requirementId: requirement.id,
+            userId: req.user.id,
+            action: 'CREATE',
+            changes: { clientName, clientId, region, status: status || 'Draft' },
         });
 
         res.status(201).json(transformRequirement(requirement));
@@ -80,6 +89,14 @@ export const updateRequirement = async (req: AuthRequest, res: Response) => {
             return res.status(403).json({ message: 'This requirement is locked and cannot be modified' });
         }
 
+        // Store previous values for audit
+        const previousValues = {
+            clientName: requirement.client_name,
+            clientId: requirement.client_id,
+            region: requirement.region,
+            status: requirement.status,
+        };
+
         const { clientName, clientId, region, responseJson, status } = req.body;
 
         await requirement.update({
@@ -88,6 +105,15 @@ export const updateRequirement = async (req: AuthRequest, res: Response) => {
             region,
             response_json: responseJson,
             status
+        });
+
+        // Log audit
+        await logAudit({
+            requirementId: requirement.id,
+            userId: req.user.id,
+            action: 'UPDATE',
+            changes: { clientName, clientId, region, status },
+            previousValues,
         });
 
         res.json(transformRequirement(requirement));
@@ -111,7 +137,25 @@ export const deleteRequirement = async (req: AuthRequest, res: Response) => {
             return res.status(403).json({ message: 'This requirement is locked and cannot be deleted' });
         }
 
+        const reqId = requirement.id;
+        const previousValues = {
+            clientName: requirement.client_name,
+            clientId: requirement.client_id,
+            region: requirement.region,
+            status: requirement.status,
+        };
+
         await requirement.destroy();
+
+        // Log audit
+        await logAudit({
+            requirementId: reqId,
+            userId: req.user.id,
+            action: 'DELETE',
+            changes: { deleted: true },
+            previousValues,
+        });
+
         res.json({ message: 'Requirement deleted' });
     } catch (error) {
         res.status(500).json({ message: 'Server error' });
@@ -164,7 +208,18 @@ export const updateStatus = async (req: AuthRequest, res: Response) => {
             return res.status(404).json({ message: 'Requirement not found' });
         }
 
+        const previousStatus = requirement.status;
         await requirement.update({ status: req.body.status });
+
+        // Log audit
+        await logAudit({
+            requirementId: requirement.id,
+            userId: req.user.id,
+            action: 'STATUS_CHANGE',
+            changes: { status: req.body.status },
+            previousValues: { status: previousStatus },
+        });
+
         res.json(transformRequirement(requirement));
     } catch (error) {
         res.status(500).json({ message: 'Server error' });
@@ -180,6 +235,16 @@ export const lockRequirement = async (req: AuthRequest, res: Response) => {
         }
 
         await requirement.update({ is_locked: true });
+
+        // Log audit
+        await logAudit({
+            requirementId: requirement.id,
+            userId: req.user.id,
+            action: 'LOCK',
+            changes: { isLocked: true },
+            previousValues: { isLocked: false },
+        });
+
         res.json({ message: 'Requirement locked successfully', ...transformRequirement(requirement) });
     } catch (error) {
         res.status(500).json({ message: 'Server error' });
@@ -194,6 +259,16 @@ export const unlockRequirement = async (req: AuthRequest, res: Response) => {
         }
 
         await requirement.update({ is_locked: false });
+
+        // Log audit
+        await logAudit({
+            requirementId: requirement.id,
+            userId: req.user.id,
+            action: 'UNLOCK',
+            changes: { isLocked: false },
+            previousValues: { isLocked: true },
+        });
+
         res.json({ message: 'Requirement unlocked successfully', ...transformRequirement(requirement) });
     } catch (error) {
         res.status(500).json({ message: 'Server error' });
@@ -232,6 +307,14 @@ export const adminUpdateRequirement = async (req: AuthRequest, res: Response) =>
             return res.status(404).json({ message: 'Requirement not found' });
         }
 
+        // Store previous values for audit
+        const previousValues = {
+            clientName: requirement.client_name,
+            clientId: requirement.client_id,
+            region: requirement.region,
+            status: requirement.status,
+        };
+
         const { clientName, clientId, region, responseJson, status } = req.body;
 
         await requirement.update({
@@ -242,7 +325,26 @@ export const adminUpdateRequirement = async (req: AuthRequest, res: Response) =>
             status
         });
 
+        // Log audit (admin edit)
+        await logAudit({
+            requirementId: requirement.id,
+            userId: req.user.id,
+            action: 'UPDATE',
+            changes: { clientName, clientId, region, status, adminEdit: true },
+            previousValues,
+        });
+
         res.json(transformRequirement(requirement));
+    } catch (error) {
+        res.status(500).json({ message: 'Server error' });
+    }
+};
+
+// Get audit history for a requirement (Admin only)
+export const getRequirementAuditHistory = async (req: AuthRequest, res: Response) => {
+    try {
+        const logs = await getAuditHistory(parseInt(req.params.id));
+        res.json(logs.map(transformAuditLog));
     } catch (error) {
         res.status(500).json({ message: 'Server error' });
     }

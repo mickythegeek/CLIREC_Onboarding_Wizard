@@ -6,6 +6,7 @@ const router = Router();
 
 router.get('/requirements', authenticateToken, requireAdmin, reqController.getAllRequirements);
 router.get('/requirements/:id', authenticateToken, requireAdmin, reqController.adminGetRequirement);
+router.get('/requirements/:id/audit', authenticateToken, requireAdmin, reqController.getRequirementAuditHistory);
 router.put('/requirements/:id', authenticateToken, requireAdmin, reqController.adminUpdateRequirement);
 router.put('/requirements/:id/status', authenticateToken, requireAdmin, reqController.updateStatus);
 router.put('/requirements/:id/lock', authenticateToken, requireAdmin, reqController.lockRequirement);

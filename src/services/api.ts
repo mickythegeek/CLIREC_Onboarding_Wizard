@@ -96,6 +96,10 @@ export const adminApi = {
 
     unlockRequirement: (id: number) =>
         api.put(`/admin/requirements/${id}/unlock`),
+
+    getAuditHistory: (id: number) =>
+        api.get(`/admin/requirements/${id}/audit`),
 };
 
 export default api;
+

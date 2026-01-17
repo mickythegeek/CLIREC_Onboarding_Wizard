@@ -18,7 +18,9 @@ import {
     Shield,
     Lock,
     Unlock,
+    History,
 } from 'lucide-react';
+import { AuditHistoryModal } from '@/components/AuditHistoryModal';
 
 interface Requirement {
     id: number;
@@ -38,6 +40,8 @@ export default function Dashboard() {
     const { user, logout, isAdmin } = useAuth();
     const [requirements, setRequirements] = useState<Requirement[]>([]);
     const [isLoading, setIsLoading] = useState(true);
+    const [auditModalOpen, setAuditModalOpen] = useState(false);
+    const [selectedRequirement, setSelectedRequirement] = useState<{ id: number; name: string } | null>(null);
 
     useEffect(() => {
         loadRequirements();
@@ -302,6 +306,20 @@ export default function Dashboard() {
                                                 {req.isLocked ? <Lock className="w-4 h-4" /> : <Unlock className="w-4 h-4" />}
                                             </Button>
                                         )}
+                                        {/* Audit History for admins */}
+                                        {isAdmin && (
+                                            <Button
+                                                variant="ghost"
+                                                size="sm"
+                                                onClick={() => {
+                                                    setSelectedRequirement({ id: req.id, name: req.clientName || `Requirement #${req.id}` });
+                                                    setAuditModalOpen(true);
+                                                }}
+                                                title="View History"
+                                            >
+                                                <History className="w-4 h-4" />
+                                            </Button>
+                                        )}
                                         {/* Edit - disabled if locked (for non-admins) */}
                                         {(!req.isLocked || isAdmin) ? (
                                             <Link to={`/wizard/edit/${req.id}`}>
@@ -344,6 +362,19 @@ export default function Dashboard() {
                     </p>
                 </div>
             </footer>
+
+            {/* Audit History Modal */}
+            {selectedRequirement && (
+                <AuditHistoryModal
+                    isOpen={auditModalOpen}
+                    onClose={() => {
+                        setAuditModalOpen(false);
+                        setSelectedRequirement(null);
+                    }}
+                    requirementId={selectedRequirement.id}
+                    requirementName={selectedRequirement.name}
+                />
+            )}
         </div>
     );
 }
