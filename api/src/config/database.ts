@@ -17,7 +17,9 @@ const sequelize = process.env.DATABASE_URL
             ssl: {
                 require: true,
                 rejectUnauthorized: false
-            }
+            },
+            // Force IPv4 to avoid ENETUNREACH with IPv6-only DNS responses
+            family: 4
         },
         pool: {
             max: 5,
