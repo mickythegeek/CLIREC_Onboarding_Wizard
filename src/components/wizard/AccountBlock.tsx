@@ -403,7 +403,7 @@ export function AccountBlock({ account, index, onUpdate, onRemove, canRemove }: 
 
                                                 <div className="grid gap-3 sm:grid-cols-2">
                                                     <FormField>
-                                                        <FormLabel>File Name Pattern</FormLabel>
+                                                        <FormLabel>File Name</FormLabel>
                                                         <Input
                                                             value={rule.fileNamePattern}
                                                             onChange={(e) =>

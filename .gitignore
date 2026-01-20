@@ -38,3 +38,5 @@ api/secrets.json
 .env
 .env.local
 .env.production
+.env.example
+DEPLOYMENT.md
