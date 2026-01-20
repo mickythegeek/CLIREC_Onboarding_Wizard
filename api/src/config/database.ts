@@ -1,7 +1,13 @@
 import { Sequelize } from 'sequelize';
 import dotenv from 'dotenv';
+import dns from 'dns';
 
 dotenv.config();
+
+// Force IPv4 to avoid ENETUNREACH on some networks/Node versions
+if (dns.setDefaultResultOrder) {
+    dns.setDefaultResultOrder('ipv4first');
+}
 
 const sequelize = process.env.DATABASE_URL
     ? new Sequelize(process.env.DATABASE_URL, {
